@@ -1,10 +1,9 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/persons'
+const baseUrl = '/api/persons'
 
-const getAll = async () => {
+const getAll = () => {
   const request = axios.get(baseUrl)
-  const response = await request
-    return response.data
+  return request.then(response => response.data)
 }
 
 const create = async newObject => {
