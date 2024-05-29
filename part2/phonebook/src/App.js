@@ -117,8 +117,10 @@ const App = () => {
       setPersons(initial)
     })
   .catch(error => {
-    console.log('Error fetching persons: ', error)
-  })
+    seterror(error.response.data.error)
+    setErrorID(2)
+    setTimeout(()=>{seterror(null)},2000)
+})
   },[])
 
   const filteredPersons = persons.filter((person) =>
@@ -148,7 +150,9 @@ const App = () => {
         },2000)
           return
         }catch(error){
-          console.log(error)
+          seterror(error.response.data.error)
+          setErrorID(2)
+          setTimeout(()=>{seterror(null)},2000)
         }
       }
     }
@@ -167,14 +171,13 @@ const App = () => {
     setTimeout(()=>{seterror(null)
   },2000)
     } catch(error){
-      if(error.response && error.response.status===404){
-        seterror(`${newName} has already been removed from the server`);
+        seterror(error.response.data.error);
         setErrorID(2)
         setTimeout(() => seterror(null), 2000);
       }
     }
   }
-};
+
 
   return (
     <div>
@@ -193,6 +196,6 @@ const App = () => {
       <Persons filteredPersons={filteredPersons} setPersons={setPersons} />
     </div>
   );
-};
+}
 
 export default App;
