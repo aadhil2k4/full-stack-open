@@ -53,7 +53,7 @@ const initialBlogs = [
 ]
 
 const nonExistingId = async() => {
-    const blog = new Blog({title: 'willremovethissoon', author: 'Me', url: 'www.willremovethissoon.com', likes: 0});
+    const blog = new Blog({title: 'willremovethissoon'});
     await blog.save();
     await blog.deleteOne();
     return blog._id.toString();
