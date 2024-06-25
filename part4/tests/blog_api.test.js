@@ -49,6 +49,31 @@ describe("when there is initially some blogs saved", () => {
   });
 
   describe("viewing a specific blog", () => {
+
+    let headers;
+    beforeEach(async () => {
+      const newUser = {
+        username: 'root',
+        name: 'Superuser',
+        password: 'password',
+      }
+
+      await api
+      .post('/api/users')
+      .send(newUser)
+
+      const result = await api
+      .post('/api/login')
+      .send(newUser)
+
+      headers = {
+        'Authorization': `Bearer ${result.body.token}`
+      }
+
+    })
+
+
+
     test("a valid blog can be added by a authorized user", async () => {
       const newBlog = {
         title: "ML is the future",
@@ -60,6 +85,7 @@ describe("when there is initially some blogs saved", () => {
       await api
         .post("/api/blogs")
         .send(newBlog)
+        .set(headers)
         .expect(201)
         .expect("Content-Type", /application\/json/);
 
@@ -79,6 +105,7 @@ describe("when there is initially some blogs saved", () => {
       await api
         .post("/api/blogs")
         .send(newBlog)
+        .set(headers)
         .expect(201)
         .expect("Content-Type", /application\/json/);
 
@@ -97,7 +124,10 @@ describe("when there is initially some blogs saved", () => {
         likes: 0,
       };
 
-      await api.post("/api/blogs").send(newBlog).expect(400);
+      await api.post("/api/blogs")
+        .send(newBlog)
+        .set(headers)
+        .expect(400);
 
       const blogsAtEnd = await helper.blogsInDb();
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
@@ -105,20 +135,60 @@ describe("when there is initially some blogs saved", () => {
   });
 
   describe('deletion of a blog', () => {
+
+    let headers;
+    beforeEach(async () => {
+      const newUser = {
+        username: 'root',
+        name: 'Superuser',
+        password: 'password',
+      };
+
+      await api
+      .post('/api/users')
+      .send(newUser);
+
+      const result = await api
+      .post('/api/login')
+      .send(newUser);
+
+      headers = {
+        'Authorization': `Bearer ${result.body.token}`
+      };
+    });
+
     test('succeeds with status code 204 if id is valid', async () => {
-        const blogAtStart = await helper.blogsInDb();
-        const blogToDelete = blogAtStart[0];
-        await api
-            .delete(`/api/blogs/${blogToDelete.id}`)
-            .expect(204)
 
-        const blogsAtEnd = await helper.blogsInDb();
-        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
+      const newBlog = {
+        title: 'ML is the future',
+        author: 'Andrew Ng',
+        url: 'https://www.coursera.org/', 
+        likes: 10
+      };
 
-        const titles = blogsAtEnd.map(r => r.title);
-        assert(!titles.includes(blogToDelete.title));
-    })
-  })
+      // Create a new blog and ensure it's added successfully
+      const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set(headers)
+      .expect(201);
+
+      const blogAtStart = await helper.blogsInDb();
+      assert.strictEqual(blogAtStart.length, helper.initialBlogs.length + 1, "Expected blog count to increase by 1");
+
+      await api
+          .delete(`/api/blogs/${response.body.id}`)
+          .set(headers)
+          .expect(204);
+
+      const blogsAtEnd = await helper.blogsInDb();
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length, "Expected blog count to revert to initial");
+
+      const titles = blogsAtEnd.map(r => r.title);
+      assert.strictEqual(titles.includes(newBlog.title), false, "Deleted blog title should not exist in the database");
+  });
+
+});
 
   describe('updating a blog', () => {
     test('likes of a blog is updated', async () => {
