@@ -34,16 +34,49 @@ test('renders url and likes when view button is clicked',async () => {
     author: 'Test Author',
     url: 'http://testblog.com',
     likes: 0,
+    user: {
+      id: '12345',
+      name: 'Test User'
+    }
+  }
+
+  const user = {
+    id: '12345',
+    name: 'Test User'
+  }
+
+  const { container } = render(<Blog blog={blog} user={user} />)
+
+  const div = container.querySelector('.blogFullDetails')
+  expect(div).toHaveTextContent('http://testblog.com')
+  expect(div).toHaveTextContent('likes 0')
+})
+
+test('clicking the like button twice calls event handler twice', async () => {
+  const blog = {
+    title: 'Test Blog Title',
+    author: 'Test Author',
+    url: 'http://testblog.com',
+    likes: 0,
+    user: {
+      id: '12345',
+      name: 'Test User'
+    }
+  }
+
+  const user = {
+    id: '12345',
+    name: 'Test User'
   }
 
   const mockHandler = vi.fn()
 
-  render(<Blog blog={blog} toggleImportance={mockHandler} />)
+  render(<Blog blog={blog} user={user} addLikes={mockHandler} />)
 
-  const user = userEvent.setup()
+  const users = userEvent.setup()
+  const button = screen.getByText('likes')
+  await users.click(button)
+  await users.click(button)
+  expect(mockHandler.mock.calls).toHaveLength(2)
 
-  const button = screen.getByText('view')
-  await user.click(button)
-
-  expect(mockHandler.mock.calls).toHaveLength(1)
 })

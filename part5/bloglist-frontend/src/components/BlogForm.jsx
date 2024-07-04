@@ -19,7 +19,7 @@ const BlogForm = ({ addBlog }) => {
   }
 
   return (
-    <div>
+    <div className='formDiv'>
       <h2>create new</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -29,6 +29,7 @@ const BlogForm = ({ addBlog }) => {
             value={newTitle}
             name="newTitle"
             onChange={({ target }) => setNewTitle(target.value)}
+            placeholder='write title here...'
           />
           <br />
           author:
@@ -37,6 +38,7 @@ const BlogForm = ({ addBlog }) => {
             value={newAuthor}
             name="newAuthor"
             onChange={({ target }) => setNewAuthor(target.value)}
+            placeholder='write author here...'
           />
           <br />
           url:
@@ -45,6 +47,7 @@ const BlogForm = ({ addBlog }) => {
             value={newURL}
             name="newURL"
             onChange={({ target }) => setNewURL(target.value)}
+            placeholder='write url here...'
           />
           <br />
           <button type="submit">create</button>
