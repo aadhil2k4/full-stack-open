@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -13,6 +13,8 @@ const App = () => {
   const [error, setError] = useState(null)
   const [errorType, setErrorType] = useState(0)
   const [user, setUser] = useState(null)
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -43,7 +45,7 @@ const App = () => {
       setErrorType(0)
       setTimeout(() => {
         setError(null)
-      }, 5000)
+      }, 3000)
     }
     console.log('logging in with', username, password)
   }
@@ -62,13 +64,15 @@ const App = () => {
       setErrorType(1)
       setTimeout(() => {
         setError(null)
-      }, 5000)
+      }, 3000)
+      // Hide the blog form and show the "create new blog" button
+      blogFormRef.current.toggleVisibility()
     } catch (exception) {
       setError('Error adding blog')
       setErrorType(0)
       setTimeout(() => {
         setError(null)
-      }, 5000)
+      }, 3000)
     }
   }
 
@@ -96,6 +100,7 @@ const App = () => {
             UserName
             <input
               type="text"
+              id="username"
               value={username}
               name="Username"
               onChange={({ target }) => setUsername(target.value)}
@@ -106,6 +111,7 @@ const App = () => {
             <input
               type="password"
               value={password}
+              id="password"
               name="Password"
               onChange={({ target }) => setPassword(target.value)}
             />
@@ -121,7 +127,7 @@ const App = () => {
       <Notification message={error} type={errorType} />
       {user.username} logged in <button onClick={handleLogout}>logout</button>
       <div>
-        <Togglable buttonLabel="create new blog">
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
           <BlogForm addBlog={addBlog} />
         </Togglable>
       </div>
