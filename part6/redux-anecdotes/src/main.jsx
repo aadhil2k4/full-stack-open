@@ -5,12 +5,12 @@ import App from './App'
 import anecdoteReducer from './reducers/anecdoteReducer'
 import filterReducer from './reducers/filterReducer'
 
-const store = createStore(reducer)
-
 const reducer = combineReducers({
   anecdotes: anecdoteReducer,
   filters: filterReducer
 })
+
+const store = createStore(reducer)
 
 store.subscribe(()=> console.log(store.getState()))
 
