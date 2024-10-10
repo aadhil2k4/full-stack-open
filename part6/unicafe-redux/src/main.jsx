@@ -1,48 +1,33 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
+import './index.css'
+import './App.css'
+
 import { createStore } from 'redux'
 import reducer from './reducer'
 
 const store = createStore(reducer)
 
 const App = () => {
-  const good = () => {
-    store.dispatch({
-      type: 'GOOD'
-    })
-  }
-  const ok = () => {
-    store.dispatch({
-      type: 'OK'
-    })
-  }
-  const bad = () => {
-    store.dispatch({
-      type: 'BAD'
-    })
-  }
-  const zero = () => {
-    store.dispatch({
-      type: 'ZERO'
-    })
+  const createDispatch = (type) => () => {
+    store.dispatch({ type })
   }
 
   return (
     <div>
-      <button onClick={good}>good</button> 
-      <button onClick={ok}>ok</button> 
-      <button onClick={bad}>bad</button>
-      <button onClick={zero}>reset stats</button>
       <div>good {store.getState().good}</div>
       <div>ok {store.getState().ok}</div>
       <div>bad {store.getState().bad}</div>
+      <button onClick={createDispatch('GOOD')}>good</button>
+      <button onClick={createDispatch('OK')}>ok</button>
+      <button onClick={createDispatch('BAD')}>bad</button>
+      <button onClick={createDispatch('ZERO')}>reset stats</button>
     </div>
   )
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
-
 const renderApp = () => {
   root.render(<App />)
 }
